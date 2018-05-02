@@ -11,8 +11,8 @@ import UIKit
 struct School: Decodable {
     let id: UUID
     let title: String
-    let created_at: String
-    let updated_at: String
+    let created_at: Date
+    let updated_at: Date
     
 }
 
@@ -27,13 +27,18 @@ class ViewController: UIViewController {
         
         URLSession.shared.dataTask(with: url) { (data, response, err) in
             guard let data = data else { return }
-            
+
+            let schoolsDecoder = JSONDecoder()
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ" //>> is this a good way or should I rather format the date output on the back end?
+            schoolsDecoder.dateDecodingStrategy = .formatted(dateFormatter)
+
             do {
                 let schools = try
-                    JSONDecoder().decode([School].self, from: data)
+                    schoolsDecoder.decode([School].self, from: data)
                 print( schools )
             } catch let jsonErr {
-                print( jsonErr )
+                print( "JSON parsing error:", jsonErr )
             }
             
             
